@@ -122,8 +122,8 @@ const int notes[][2] = {
 {440,	500},
 {  0,	0}};
 
-// Delay function
-int delay_mill (int time){
+// Delay function 
+/*int delay_mill (int time){
     TIM15 -> PSC = (SYS_CLK_FRQ / 1000) - 1; // Creating one ms resolution from system clock
 
     TIM15 -> ARR = time - 1;               // ARR = time in ms because the counter counts from 0 to ARR
@@ -141,10 +141,10 @@ int delay_mill (int time){
     TIM15 -> SR &= ~ (1<<0);               // Clear the interupt flag
 
     return 1;                              // Signal that the timer is finished
-}
+} */
 
 // Square wave function
-void pwm (int freq){
+/*void pwm (int freq){
    
     TIM16 -> PSC = 9;                      // Setting prescaler to 9 to get CK_CNT = 100k Hz from 1 MHz clock input
     
@@ -165,7 +165,7 @@ void pwm (int freq){
 
     // While statement?
 
-}
+} */
 
 int main(void) {
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +193,7 @@ int main(void) {
     GPIOA -> MODER &= ~(1<<12); // Make pin 12 (PA6) an alternate function
     GPIOA -> MODER |= (1<<13); // Make pin 12 (PA6) an alternate function 
 
-    GPIOA -> AFRH |= (0b1110 << 24); // Configure pin 12 (PA6) to be an alternate function of type TIM16
+    GPIOA -> AFRL |= (0b1110 << 24); // Configure pin 12 (PA6) to be an alternate function of type TIM16.....
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Play Music
@@ -207,8 +207,8 @@ int main(void) {
         freq = notes[i][0]; // Retrieves frequency
         time = notes[i][1]; // Retrieves time delay
 
-        pwm(notes[i][0]);                       // Produces PWM signal
-        delay_mill(notes[i][1]);                // Delays the specified amont of time
+        //pwm(notes[i][0]);                       // Produces PWM signal
+        //delay_mill(notes[i][1]);                // Delays the specified amont of time
         TIM16 -> CR1 &= ~(1<<0);         // Turn off TIM 16 and then proceeds to the next pair
     }
     while(1);                            // Don't play anything after song is finished

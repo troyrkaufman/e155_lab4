@@ -4,7 +4,7 @@
 
 #define TIM15_BASE (0x40014000)
 #define TIM16_BASE (0x40014400)
-//#define TIM15_BASE (0x40014000)
+#define SYS_CLK_FRQ 1000000
 
 typedef struct{
     volatile uint32_t CR1;           // 0x00
@@ -35,4 +35,55 @@ typedef struct{
 
 #define TIM16 ((TIMx_TypeDef *) TIM16_BASE)
 #define TIM15 ((TIMx_TypeDef *) TIM15_BASE)
+
+void pwm_init(TIMx_TypeDef * TIMx){
+    TIMx->PSC = 9;                      // Setting prescaler to 9 to get CK_CNT = 100k Hz from 1 MHz clock input
+    TIMx->CCMR1_OUTPUT |= (0b110<<4);   // Setting to OUPUT PWM mode TIMx_CNT < TIMx_CCR1 else inactive
+    TIMx->CCMR1_OUTPUT |= (1<<3);
+    TIMx->CR1 |= (1<<7);                // Auto-reload preload enabled. The ARR is now buffered
+    TIMx->CCER &= ~(1<<1);               // Configure output as active HIGH
+    TIMx->CR1 |= (1<<0);                // Enables clock input after timer configuration ***LAST STEP***
+    TIMx->EGR |= (1<<0);                // Initialize all registers to allow preload registers to transfer to shadow registers during an update event
+}
+
+void pwm_update(TIMx_TypeDef * TIMx, int freq){
+    int arr = (SYS_CLK_FRQ/freq) - 1;   // Calculation for ARR
+    TIMx->ARR = arr;                    // Sets PWM frequency to requested amount
+    TIMx->CCR1 = arr/2;                 // Sets duty cycle to 50%
+    TIMx->EGR &= ~(1<<0);               // Resets the flag
+}
+
+void delay_init(TIMx_TypeDef * TIMx){
+   TIMx->PSC = (SYS_CLK_FRQ / 1000) - 1; // Creating one ms resolution from system clock
+   TIMx->CR1 |= (1<<0);                  // Start tIM15 counter
+}
+
+void delay_update(TIMx_TypeDef * TIMx, int duration){
+   TIMx->ARR = duration - 1;               // ARR = time in ms because the counter counts from 0 to ARR
+   TIMx->CNT = 0;                      // Ensures counter starts at zero everytime
+   TIMx->SR &= ~(1<<0);                // Resets interupt flag upon counter reset
+   while (!(TIMx -> SR & (1<<0)));       // Wait until flag is triggered (Counter == ARR)
+  // TIMx -> CR1 &= ~(1<<0);               // Disable counter
+   TIMx -> SR &= ~ (1<<0);               // Clear the interupt flag
+}
+
+
+   
+
+   
+
+    
+
+   
+
+    
+
+   
+
+    
+
+   
+
+
+
 
