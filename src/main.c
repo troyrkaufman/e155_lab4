@@ -171,9 +171,9 @@ int main(void) {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //Must configure AHB PRESC and APB1 PRESC to divisors (1) before giving input clock to TIMx 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    RCC -> CR |= (0b0100 << 4);   // Configure System Clock to be 1 MHz
+    //RCC -> CR |= (0b0100 << 4);   // Configure System Clock to be 1 MHz
     RCC -> CFGR |= (0b0000 << 4); // SYSCLK is not divided by the AHB PRESC in clock tree
-    RCC -> CFGR |= (0b000 << 8);  // HCLK (formerly SYSCLK) is not divided by APB1 PRESC 
+    RCC -> CFGR |= (0b101 << 8);  // HCLK (formerly SYSCLK)is divided by APB1 PRESC (factor of 4) to get 1 MHz
 
     // Missing x1 or x2 ??????????
     
@@ -198,18 +198,21 @@ int main(void) {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Play Music
     ///////////////////////////////////////////////////////////////////////////////////////////////
+    pwm_init(TIM16);
+    delay_init(TIM15);
+
     int num_notes = sizeof(notes) / sizeof(notes[0]); // Calculates number of pairs
 
     volatile int freq; 
-    volatile int time;
+    volatile int duration;
 
-    for (int i=0; i < 3; i++){
+    for (int i=0; i < num_notes; i++){
         freq = notes[i][0]; // Retrieves frequency
-        time = notes[i][1]; // Retrieves time delay
+        duration = notes[i][1]; // Retrieves time delay
 
-        //pwm(notes[i][0]);                       // Produces PWM signal
-        //delay_mill(notes[i][1]);                // Delays the specified amont of time
-        TIM16 -> CR1 &= ~(1<<0);         // Turn off TIM 16 and then proceeds to the next pair
+        pwm_update(TIM16, freq);
+        delay_update(TIM15, duration);
+        //TIM16 -> CR1 &= ~(1<<0);         // Turn off TIM 16 and then proceeds to the next pair
     }
     while(1);                            // Don't play anything after song is finished
 }
