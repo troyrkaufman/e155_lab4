@@ -49,14 +49,14 @@ void pwm_init(TIMx_TypeDef * TIMx){
 }
 
 void pwm_update(TIMx_TypeDef * TIMx, int freq){
-    int arr = (SYS_CLK_FRQ / freq) - 1; // Calculation for ARR
+    int arr = (100000 / freq) - 1;       // Calculation for ARR
     TIMx->ARR = arr;                    // Sets PWM frequency to requested amount
     TIMx->CCR1 = arr/2;                 // Sets duty cycle to 50%
     TIMx->EGR &= ~(1<<0);               // Resets the flag
 }
 
 void delay_init(TIMx_TypeDef * TIMx){
-   TIMx->PSC = (SYS_CLK_FRQ / 1000) - 1; // Creating one ms resolution from system clock
+   TIMx->PSC = (100000 / 1000) - 1; // Creating one ms resolution from system clock
    TIMx->BDTR |= (1<<15);               // (MOE) OC and OCN outputs are enabled if their respective enable bits are set (CCxE, CCxNE, in TIMx_CCER register)
    TIMx->CCER |= (1<<0);                // Configure Channel 1 as output
    TIMx->CR1 |= (1<<0);                  // Start tIM15 counter
