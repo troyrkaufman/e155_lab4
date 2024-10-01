@@ -181,7 +181,7 @@ int main(void) {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Peripheral Configuration
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    RCC -> AHB2ENR |= (1<<0); // GPIOA enable
+    RCC -> AHB2ENR |= (1<<0);    // GPIOA enable
 
     RCC -> APB2ENR |= (1 << 17); // TIM16 clock enable
     RCC -> APB2ENR |= (1 << 16); // TIM15 clock enable
@@ -191,28 +191,24 @@ int main(void) {
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     GPIOA -> MODER &= ~(1<<12); // Make pin 12 (PA6) an alternate function
-    GPIOA -> MODER |= (1<<13); // Make pin 12 (PA6) an alternate function 
+    GPIOA -> MODER |= (1<<13);  // Make pin 12 (PA6) an alternate function 
 
     GPIOA -> AFRL |= (0b1110 << 24); // Configure pin 12 (PA6) to be an alternate function of type TIM16.....
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Play Music
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    pwm_init(TIM16);
-    delay_init(TIM15);
+    pwm_init(TIM16);           // Initialize PWM related configuration registers
+    delay_init(TIM15);         // Initialize delay related configuration registers
 
     int num_notes = sizeof(notes) / sizeof(notes[0]); // Calculates number of pairs
 
-    volatile int freq; 
-    volatile int duration;
+    int freq; 
+    int duration;
 
     for (int i=0; i < num_notes; i++){
-        freq = notes[i][0]; // Retrieves frequency
-        duration = notes[i][1]; // Retrieves time delay
-
-        pwm_update(TIM16, freq);
-        delay_update(TIM15, duration);
-        //TIM16 -> CR1 &= ~(1<<0);         // Turn off TIM 16 and then proceeds to the next pair
+        pwm_update(TIM16, notes[i][0]);
+        delay_update(TIM15, notes[i][1]);
     }
     while(1);                            // Don't play anything after song is finished
 }
