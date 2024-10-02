@@ -205,9 +205,21 @@ int main(void) {
     int freq; 
     int duration;
 
-    for (int i=0; i < num_notes; i++){
-        pwm_update(TIM16, notes[i][0]);
-        delay_update(TIM15, notes[i][1]);
+     for (int i=0; i < num_notes; i++){
+        pwm_update(TIM16, notes[i][0]);                       // Produces PWM signal
+        delay_update(TIM15, notes[i][1]);                // Delays the specified amont of time
     }
-    while(1);                            // Don't play anything after song is finished
+
+    //while(1);                            // Don't play anything after song is finished
 }
+
+ /*for (int i=0; i < num_notes; i++){
+        if (notes[i][0] == 0) {
+          TIM16->CR1 &= ~(1<<0);
+          delay_update(TIM15, notes[i][1]);
+        } else {
+          pwm_update(TIM16, notes[i][0]);
+          TIM16->CR1 |= (1<<0);
+          delay_update(TIM15, notes[i][1]);
+        } 
+    } */
