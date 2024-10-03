@@ -30,14 +30,14 @@ typedef struct{
              uint32_t reserved4;     // 0x54
              uint32_t reserved5;     // 0x58
              uint32_t reserved6;     // 0x5C
-    volatile uint32_t OR2;           // 0x^0
+    volatile uint32_t OR2;           // 0x60
 } TIMx_TypeDef;
 
 #define TIM16 ((TIMx_TypeDef *) TIM16_BASE)
 #define TIM15 ((TIMx_TypeDef *) TIM15_BASE)
 
 void pwm_init(TIMx_TypeDef * TIMx){
-    TIMx->PSC = 99;                      // Setting prescaler to 19 to get CK_CNT = 50k Hz from 1 MHz clock input
+    TIMx->PSC = 99;                      // Setting prescaler to 99 to get CK_CNT = 10k Hz from 1 MHz clock input
     TIMx->CCMR1_OUTPUT |= (0b110<<4);   // Setting to OUPUT PWM mode TIMx_CNT < TIMx_CCR1 else inactive
     TIMx->CCMR1_OUTPUT |= (1<<3);       // Preload register on TIMxCCR1 is enabled
     TIMx->BDTR |= (1<<15);              // (MOE) OC and OCN outputs are enabled if their respective enable bits are set (CCxE, CCxNE, in TIMx_CCER register)
@@ -62,27 +62,21 @@ void pwm_update(TIMx_TypeDef * TIMx, int freq){
 }
 
 void delay_init(TIMx_TypeDef * TIMx){
-   TIMx->PSC = (CK_CNT / 1000) - 1; // Creating one ms resolution from system clock
-   TIMx->BDTR |= (1<<15);               // (MOE) OC and OCN outputs are enabled if their respective enable bits are set (CCxE, CCxNE, in TIMx_CCER register)
-   TIMx->CCER |= (1<<0);                // Configure Channel 1 as output
+   TIMx->PSC = 99;                    //(CK_CNT / 1000) - 1;//(CK_CNT / 1000) - 1; // Creating one ms resolution from system clock
+   //TIMx->ARR = 0xFFFF; 
+   TIMx->CR1 |= (1<<7);               // Auto-reload preload enabled
+   TIMx->EGR |= (1<<0);               // Initialize all registers to allow preload registers
    TIMx->CR1 |= (1<<0);                  // Start tIM15 counter
 }
 
 void delay_update(TIMx_TypeDef * TIMx, int duration){
-   TIMx->ARR = duration - 1;            // ARR = time in ms because the counter counts from 0 to ARR
+   TIMx->ARR = (duration * 10) - 1;            // With a 10KHz clock, each tick is 0.1 milliseconds. So the freqeuncy should be multiplied by 10 with 1 subtracted from it
    TIMx->CNT = 0;                       // Ensures counter starts at zero everytime
    TIMx->SR &= ~(1<<0);                 // Resets interupt flag upon counter reset
    while (!(TIMx -> SR & (1<<0)));      // Wait until flag is triggered (Counter == ARR)
-  // TIMx -> CR1 &= ~(1<<0);            // Disable counter
-   TIMx->SR &= ~ (1<<0);                // Clear the interupt flag
+   TIMx->SR &= ~(1<<0);                // Clear the interupt flag
 }
 
-/*
-OCx polarity is software programmable using the CCxP bit in the TIMx_CCER register. It
-can be programmed as active high or active low. OCx output is enabled by a combination of
-the CCxE, CCxNE, MOE, OSSI and OSSR bits (TIMx_CCER and TIMx_BDTR registers).
-Refer to the TIMx_CCER register description for more details.
-*/
 
 
    

@@ -123,64 +123,17 @@ const int notes[][2] = {
 {440,	500},
 {  0,	0}};
 
-// Delay function 
-/*int delay_mill (int time){
-    TIM15 -> PSC = (SYS_CLK_FRQ / 1000) - 1; // Creating one ms resolution from system clock
-
-    TIM15 -> ARR = time - 1;               // ARR = time in ms because the counter counts from 0 to ARR
-
-    TIM15 -> CNT = 0;                      // Ensures counter starts at zero everytime
-
-    TIM15 -> SR &= ~(1<<0);                // Resets interupt flag upon counter reset
-
-    TIM15 -> CR1 |= (1<<0);                // Start tIM15 counter
-
-    while (!(TIM15 -> SR & (1<<0)));       // Wait until flag is triggered (Counter == ARR)
-
-    TIM15 -> CR1 &= ~(1<<0);               // Disable counter
-
-    TIM15 -> SR &= ~ (1<<0);               // Clear the interupt flag
-
-    return 1;                              // Signal that the timer is finished
-} */
-
-// Square wave function
-/*void pwm (int freq){
-   
-    TIM16 -> PSC = 9;                      // Setting prescaler to 9 to get CK_CNT = 100k Hz from 1 MHz clock input
-    
-    TIM16 -> EGR |= (1<<0);                // Initialize all registers to allow preload registers to transfer to shadow registers during an update event
-    
-    TIM16 -> CCMR1_OUTPUT |= (0b110<<4);   // Setting to OUPUT PWM mode TIMx_CNT < TIMx_CCR1 else inactive
-    TIM16 -> CCMR1_OUTPUT |= (1<<3);
-
-    TIM16 -> CR1 |= (1<<7);                // Auto-reload preload enabled. The ARR is now buffered
-    
-    TIM16 -> CCER &= ~(1<<1);              // Configure output as active HIGH
-
-    volatile int arr = (SYS_CLK_FRQ/freq) - 1; // Calculation for ARR
-    TIM16 -> ARR = arr;                    // Sets PWM frequency to requested amount
-    TIM16 -> CCR1 = arr/2;                 // Sets duty cycle to 50%
-
-    TIM16 -> CR1 |= (1<<0);                // Enables clock input after timer configuration ***LAST STEP***
-
-    // While statement?
-
-} */
-
 int main(void) {
     // Waitstates
-    configureFlash();
+    //configureFlash();
+    //configureFlash();
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //Must configure AHB PRESC and APB1 PRESC to divisors (1) before giving input clock to TIMx 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     RCC -> CFGR |= (0b1001 << 4); // SYSCLK is divided by 4 from the AHB PRESC in clock tree (to get to 1MHz)
-    RCC -> CFGR |= (0b000 << 8);  // HCLK (formerly SYSCLK)is not divided by APB1 PRESC 
-
-    // Missing x1 or x2 ??????????
-    
+    RCC -> CFGR |= (0b000 << 8);  // HCLK (formerly SYSCLK)is not divided by APB1 PRESC (Setting this to 0b0xx avoids 2x multiplier)
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Peripheral Configuration
@@ -209,22 +162,11 @@ int main(void) {
 
     int freq; 
     int duration;
+    int x = 0; 
 
      for (int i=0; i < num_notes; i++){
-        pwm_update(TIM16, notes[i][0]);                       // Produces PWM signal
+        pwm_update(TIM16, notes[i][0]);                  // Produces PWM signal
         delay_update(TIM15, notes[i][1]);                // Delays the specified amont of time
     }
-
-    //while(1);                            // Don't play anything after song is finished
 }
 
- /*for (int i=0; i < num_notes; i++){
-        if (notes[i][0] == 0) {
-          TIM16->CR1 &= ~(1<<0);
-          delay_update(TIM15, notes[i][1]);
-        } else {
-          pwm_update(TIM16, notes[i][0]);
-          TIM16->CR1 |= (1<<0);
-          delay_update(TIM15, notes[i][1]);
-        } 
-    } */
