@@ -49,10 +49,16 @@ void pwm_init(TIMx_TypeDef * TIMx){
 }
 
 void pwm_update(TIMx_TypeDef * TIMx, int freq){
-    int arr = (CK_CNT / freq) - 1;       // Calculation for ARR
-    TIMx->ARR = arr;                    // Sets PWM frequency to requested amount
-    TIMx->CCR1 = arr/2;                 // Sets duty cycle to 50%
-    TIMx->EGR &= ~(1<<0);               // Resets the flag
+    int arr;
+    if (freq == 0){
+      TIMx->CR1 &= ~(1<<0);
+    } else {
+      TIMx->CR1 |= (1<<0);
+      arr = (CK_CNT / freq) - 1;       // Calculation for ARR
+      TIMx->ARR = arr;                    // Sets PWM frequency to requested amount
+      TIMx->CCR1 = arr/2;                 // Sets duty cycle to 50%
+      TIMx->EGR &= ~(1<<0);               // Resets the flag
+    }
 }
 
 void delay_init(TIMx_TypeDef * TIMx){

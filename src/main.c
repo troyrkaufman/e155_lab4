@@ -7,8 +7,9 @@
 #include "RCC.h"
 #include "GPIO_h.h"
 #include "TIMER.h"
+#include "STM32L432KC_FLASH.h"
 
-#define SYS_CLK_FRQ 1000000 // 1 MHz
+//#define SYS_CLK_FRQ 1000000 // 1 MHz
 
 // Pitch in Hz, duration in ms
 const int notes[][2] = {
@@ -168,6 +169,10 @@ const int notes[][2] = {
 } */
 
 int main(void) {
+    // Waitstates
+    configureFlash();
+
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //Must configure AHB PRESC and APB1 PRESC to divisors (1) before giving input clock to TIMx 
     ///////////////////////////////////////////////////////////////////////////////////////////////

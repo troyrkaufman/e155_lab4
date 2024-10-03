@@ -63,11 +63,13 @@
     <folder Name="Source Files">
       <configuration Name="Common" filter="c;cpp;cxx;cc;h;s;asm;inc" />
       <file file_name="../src/GPIO_h.h" />
-      <file file_name="../src/main.c" />
       <file file_name="main.c">
         <configuration Name="Debug" build_exclude_from_build="Yes" />
       </file>
+      <file file_name="../src/main.c" />
       <file file_name="../src/RCC.h" />
+      <file file_name="../src/STM32L432KC_FLASH.c" />
+      <file file_name="../src/STM32L432KC_FLASH.h" />
       <file file_name="../src/TIMER.h" />
     </folder>
     <folder Name="System Files">
