@@ -171,9 +171,8 @@ int main(void) {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //Must configure AHB PRESC and APB1 PRESC to divisors (1) before giving input clock to TIMx 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    //RCC -> CR |= (0b0100 << 4);   // Configure System Clock to be 1 MHz
-    RCC -> CFGR |= (0b0000 << 4); // SYSCLK is not divided by the AHB PRESC in clock tree
-    RCC -> CFGR |= (0b101 << 8);  // HCLK (formerly SYSCLK)is divided by APB1 PRESC (factor of 4) to get 1 MHz
+    RCC -> CFGR |= (0b1001 << 4); // SYSCLK is divided by 4 from the AHB PRESC in clock tree (to get to 1MHz)
+    RCC -> CFGR |= (0b000 << 8);  // HCLK (formerly SYSCLK)is not divided by APB1 PRESC 
 
     // Missing x1 or x2 ??????????
     
@@ -206,9 +205,21 @@ int main(void) {
     int freq; 
     int duration;
 
-    for (int i=0; i < num_notes; i++){
-        pwm_update(TIM16, notes[i][0]);
-        delay_update(TIM15, notes[i][1]);
+     for (int i=0; i < num_notes; i++){
+        pwm_update(TIM16, notes[i][0]);                       // Produces PWM signal
+        delay_update(TIM15, notes[i][1]);                // Delays the specified amont of time
     }
-    while(1);                            // Don't play anything after song is finished
+
+    //while(1);                            // Don't play anything after song is finished
 }
+
+ /*for (int i=0; i < num_notes; i++){
+        if (notes[i][0] == 0) {
+          TIM16->CR1 &= ~(1<<0);
+          delay_update(TIM15, notes[i][1]);
+        } else {
+          pwm_update(TIM16, notes[i][0]);
+          TIM16->CR1 |= (1<<0);
+          delay_update(TIM15, notes[i][1]);
+        } 
+    } */

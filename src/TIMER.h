@@ -4,7 +4,7 @@
 
 #define TIM15_BASE (0x40014000)
 #define TIM16_BASE (0x40014400)
-#define SYS_CLK_FRQ 1000000
+#define CK_CNT 10000
 
 typedef struct{
     volatile uint32_t CR1;           // 0x00
@@ -37,7 +37,7 @@ typedef struct{
 #define TIM15 ((TIMx_TypeDef *) TIM15_BASE)
 
 void pwm_init(TIMx_TypeDef * TIMx){
-    TIMx->PSC = 9;                      // Setting prescaler to 9 to get CK_CNT = 100k Hz from 1 MHz clock input
+    TIMx->PSC = 99;                      // Setting prescaler to 19 to get CK_CNT = 50k Hz from 1 MHz clock input
     TIMx->CCMR1_OUTPUT |= (0b110<<4);   // Setting to OUPUT PWM mode TIMx_CNT < TIMx_CCR1 else inactive
     TIMx->CCMR1_OUTPUT |= (1<<3);       // Preload register on TIMxCCR1 is enabled
     TIMx->BDTR |= (1<<15);              // (MOE) OC and OCN outputs are enabled if their respective enable bits are set (CCxE, CCxNE, in TIMx_CCER register)
@@ -49,14 +49,14 @@ void pwm_init(TIMx_TypeDef * TIMx){
 }
 
 void pwm_update(TIMx_TypeDef * TIMx, int freq){
-    int arr = (SYS_CLK_FRQ / freq) - 1; // Calculation for ARR
+    int arr = (CK_CNT / freq) - 1;       // Calculation for ARR
     TIMx->ARR = arr;                    // Sets PWM frequency to requested amount
     TIMx->CCR1 = arr/2;                 // Sets duty cycle to 50%
     TIMx->EGR &= ~(1<<0);               // Resets the flag
 }
 
 void delay_init(TIMx_TypeDef * TIMx){
-   TIMx->PSC = (SYS_CLK_FRQ / 1000) - 1; // Creating one ms resolution from system clock
+   TIMx->PSC = (CK_CNT / 1000) - 1; // Creating one ms resolution from system clock
    TIMx->BDTR |= (1<<15);               // (MOE) OC and OCN outputs are enabled if their respective enable bits are set (CCxE, CCxNE, in TIMx_CCER register)
    TIMx->CCER |= (1<<0);                // Configure Channel 1 as output
    TIMx->CR1 |= (1<<0);                  // Start tIM15 counter
