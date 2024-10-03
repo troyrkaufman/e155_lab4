@@ -1,8 +1,0 @@
-T1388 000:005.662   SEGGER J-Link V7.98f Log File
-T1388 000:005.982   DLL Compiled: Aug 29 2024 10:16:57
-T1388 000:005.994   Logging started @ 2024-10-01 01:39
-T1388 000:006.004   Process: C:\Program Files\SEGGER\SEGGER Embedded Studio 8.16a\bin\emStudio.exe
-T1388 000:006.017 - 6.014ms
-T1388 000:006.067 JLINK_ExecCommand("EnableAutoUpdateFW", ...). 
-T1388 000:006.095 - 0.026ms returns 0x00
-T1388 000:006.114 JLINK_OpenEx(...)
