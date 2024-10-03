@@ -1,3 +1,7 @@
+// Author: Troy Kaufman
+// Email: tkaufman@hmc.edu
+// Date: 10/3/24
+
 // Header for RCC Functions
 
 #include <stdint.h>

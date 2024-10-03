@@ -1,7 +1,6 @@
-
-// lab4_starter.c
-// Fur Elise, E155 Lab 4
-// Updated Fall 2024
+// Author: Troy Kaufman
+// Email: tkaufman@hc.edu
+// Date: 10/3/24
 
 #include <stdint.h> 
 #include "RCC.h"
@@ -9,10 +8,8 @@
 #include "TIMER.h"
 #include "STM32L432KC_FLASH.h"
 
-//#define SYS_CLK_FRQ 1000000 // 1 MHz
-
 // Pitch in Hz, duration in ms
-/*
+
 const int notes[][2] = {
 {659,	125},
 {623,	125},
@@ -123,8 +120,8 @@ const int notes[][2] = {
 {494,	125},
 {440,	500},
 {  0,	0}};
-*/
 
+/* Happy Birthday Song Notes
 const uint16_t notes[][2] = {
    {262, 250},  // C4, 250 ms - "Happy"
     {262, 250},  // C4, 250 ms - "Birth"
@@ -154,13 +151,9 @@ const uint16_t notes[][2] = {
     {392, 500},  // G4, 500 ms - "you"
     {349, 500},   // F4, 500 ms - (end)
     {0,0}};
+*/
 
 int main(void) {
-    // Waitstates
-    //configureFlash();
-    //configureFlash();
-
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //Must configure AHB PRESC and APB1 PRESC to divisors (1) before giving input clock to TIMx 
     ///////////////////////////////////////////////////////////////////////////////////////////////

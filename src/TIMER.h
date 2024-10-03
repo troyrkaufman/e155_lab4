@@ -1,3 +1,7 @@
+// Author: Troy Kaufman
+// Email: tkaufman@hmc.edu
+// Date: 10/3/24
+
 // Header for TIMER functions
 
 #include <stdint.h>
@@ -55,15 +59,14 @@ void pwm_update(TIMx_TypeDef * TIMx, int freq){
     } else {
       TIMx->CR1 |= (1<<0);
       arr = (CK_CNT / freq) - 1;       // Calculation for ARR
-      TIMx->ARR = arr;                    // Sets PWM frequency to requested amount
-      TIMx->CCR1 = arr/2;                 // Sets duty cycle to 50%
-      TIMx->EGR &= ~(1<<0);               // Resets the flag
+      TIMx->ARR = arr;                 // Sets PWM frequency to requested amount
+      TIMx->CCR1 = arr/2;              // Sets duty cycle to 50%
+      TIMx->EGR &= ~(1<<0);            // Resets the flag
     }
 }
 
 void delay_init(TIMx_TypeDef * TIMx){
    TIMx->PSC = 99;                    //(CK_CNT / 1000) - 1;//(CK_CNT / 1000) - 1; // Creating one ms resolution from system clock
-   //TIMx->ARR = 0xFFFF; 
    TIMx->CR1 |= (1<<7);               // Auto-reload preload enabled
    TIMx->EGR |= (1<<0);               // Initialize all registers to allow preload registers
    TIMx->CR1 |= (1<<0);                  // Start tIM15 counter
