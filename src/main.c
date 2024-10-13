@@ -9,8 +9,9 @@
 #include "STM32L432KC_FLASH.h"
 
 // Pitch in Hz, duration in ms
-
 const int notes[][2] = {
+{220, 125},
+{1000, 125},
 {659,	125},
 {623,	125},
 {659,	125},
@@ -120,8 +121,8 @@ const int notes[][2] = {
 {494,	125},
 {440,	500},
 {  0,	0}};
-
-/* Happy Birthday Song Notes
+/*
+// Happy Birthday Song Notes
 const uint16_t notes[][2] = {
    {262, 250},  // C4, 250 ms - "Happy"
     {262, 250},  // C4, 250 ms - "Birth"
@@ -193,5 +194,6 @@ int main(void) {
         pwm_update(TIM16, notes[i][0]);                  // Produces PWM signal
         delay_update(TIM15, notes[i][1]);                // Delays the specified amont of time
     }
+    while(1);                                            // Prevent PC to go to forever loop handler
 }
 
